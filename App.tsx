@@ -63,8 +63,14 @@ export default function App() {
   useEffect(() => {
     const checkApiKey = async () => {
       // @ts-ignore
-      const selected = await window.aistudio.hasSelectedApiKey();
-      setHasApiKey(selected);
+      if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
+        // @ts-ignore
+        const selected = await window.aistudio.hasSelectedApiKey();
+        setHasApiKey(selected);
+      } else {
+        // Si on n'est pas dans l'environnement AI Studio, on considère que la clé est présente (via process.env)
+        setHasApiKey(true);
+      }
     };
     checkApiKey();
     gemini.fetchNFFKnowledgeBase();
@@ -72,8 +78,11 @@ export default function App() {
 
   const handleSelectKey = async () => {
     // @ts-ignore
-    await window.aistudio.openSelectKey();
-    setHasApiKey(true);
+    if (window.aistudio && typeof window.aistudio.openSelectKey === 'function') {
+      // @ts-ignore
+      await window.aistudio.openSelectKey();
+      setHasApiKey(true);
+    }
   };
 
   useEffect(() => {
