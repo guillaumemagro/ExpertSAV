@@ -21,7 +21,6 @@ const WAITING_MESSAGES = [
 ];
 
 export default function App() {
-  const [hasApiKey, setHasApiKey] = useState<boolean | null>(null);
   const [currentView, setCurrentView] = useState<View>(View.Diagnosis);
   const [score, setScore] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -61,29 +60,8 @@ export default function App() {
   }, [score]);
 
   useEffect(() => {
-    const checkApiKey = async () => {
-      // @ts-ignore
-      if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
-        // @ts-ignore
-        const selected = await window.aistudio.hasSelectedApiKey();
-        setHasApiKey(selected);
-      } else {
-        // Si on n'est pas dans l'environnement AI Studio, on considère que la clé est présente (via process.env)
-        setHasApiKey(true);
-      }
-    };
-    checkApiKey();
     gemini.fetchNFFKnowledgeBase();
   }, []);
-
-  const handleSelectKey = async () => {
-    // @ts-ignore
-    if (window.aistudio && typeof window.aistudio.openSelectKey === 'function') {
-      // @ts-ignore
-      await window.aistudio.openSelectKey();
-      setHasApiKey(true);
-    }
-  };
 
   useEffect(() => {
     let interval: any;
@@ -91,37 +69,6 @@ export default function App() {
     else setLoadingTime(0);
     return () => clearInterval(interval);
   }, [isAnalyzing, isTheoryLoading, isLoadingQuiz]);
-
-  if (hasApiKey === false) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#1b1d29] text-white p-6 text-center">
-        <div className="bg-[#f56a00] p-4 rounded-3xl mb-8 shadow-2xl animate-bounce">
-          <Rocket size={48} />
-        </div>
-        <h1 className="text-4xl font-black font-work uppercase tracking-tighter mb-4">Expert Complice</h1>
-        <p className="text-slate-400 max-w-md mb-10 text-sm leading-relaxed">
-          Pour activer la puissance de <strong>Nano Banana 2</strong> et générer des guides visuels haute définition, 
-          veuillez sélectionner votre clé API payante.
-        </p>
-        <button 
-          onClick={handleSelectKey}
-          className="bg-[#f56a00] hover:bg-orange-600 text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest text-sm shadow-xl transition-all flex items-center gap-3"
-        >
-          Sélectionner ma clé API <ArrowRight size={20} />
-        </button>
-        <a 
-          href="https://ai.google.dev/gemini-api/docs/billing" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="mt-8 text-xs text-slate-500 underline hover:text-slate-300 transition-colors"
-        >
-          En savoir plus sur la facturation
-        </a>
-      </div>
-    );
-  }
-
-  if (hasApiKey === null) return null;
 
   const toggleStep = (idx: number) => {
     const newChecked = new Set(checkedSteps);
