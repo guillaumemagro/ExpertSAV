@@ -313,12 +313,12 @@ CONSTAT : ${result.observation_fragment}`;
                     </div>
                   </div>
                   <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-[#1b1d29] p-8 rounded-3xl text-white shadow-lg flex flex-col justify-center min-h-[220px]">
+                    <div className="bg-[#1b1d29] p-8 rounded-3xl text-white shadow-lg flex flex-col justify-center min-h-[280px]">
                       <h4 className="text-sm font-black uppercase mb-4 flex items-center gap-2 tracking-wide"><Eye className="text-orange-400" size={16} /> Focus Technique</h4>
                       <p className="text-slate-300 text-sm leading-relaxed font-medium">{result.technical_focus}</p>
                     </div>
-                    <div className="bg-white p-4 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-center min-h-[220px]">
-                      {isGeneratingImage ? <Loader2 className="animate-spin text-orange-200" /> : result.visual_guide ? <img src={result.visual_guide} className="max-h-[180px] object-contain" /> : <ImageIcon size={32} className="text-slate-100" />}
+                    <div className="bg-white p-2 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-center min-h-[280px] overflow-hidden">
+                      {isGeneratingImage ? <Loader2 className="animate-spin text-orange-200" /> : result.visual_guide ? <img src={result.visual_guide} className="max-h-[260px] w-full object-contain rounded-2xl" /> : <ImageIcon size={32} className="text-slate-100" />}
                     </div>
                   </div>
                   <div className="bg-white p-8 rounded-3xl shadow-sm">

@@ -282,7 +282,7 @@ DIRECTIVES GÉNÉRALES :
 
   async generateVisualGuide(product: string, category: string, focusDescription: string): Promise<string | undefined> {
     const ai = this.getAIInstance();
-    const prompt = `Technical exploded view of ${product}, focus on ${focusDescription}. White background. Technical style. Include labels for key components.`;
+    const prompt = `Macro close-up technical diagram of ${product}, specifically zoomed-in on: ${focusDescription}. Clean, simplified technical style. White background. Use LARGE, READABLE text labels for the main components. Focus on clarity for a repair technician. No complex exploded views, prefer a clear focus on the specific part.`;
     try {
       const response = await ai.models.generateContent({
         model: 'gemini-3.1-flash-image-preview',
