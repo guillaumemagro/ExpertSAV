@@ -213,6 +213,34 @@ CONSTAT : ${result.observation_fragment}`;
     );
   }, [result]);
 
+  const renderErrorMessage = (msg: string | null) => {
+    if (!msg) return null;
+    let displayMsg = msg;
+    try {
+      // Si c'est un JSON d'erreur brut, on essaie d'extraire le message utile
+      if (msg.startsWith('{')) {
+        const parsed = JSON.parse(msg);
+        displayMsg = parsed.error?.message || parsed.message || msg;
+      }
+    } catch (e) {
+      // Pas un JSON, on garde le message tel quel
+    }
+    
+    // Traduction à la volée des erreurs courantes de surcharge
+    if (displayMsg.includes("high demand") || displayMsg.includes("overloaded") || displayMsg.includes("503")) {
+      displayMsg = "Le moteur d'IA est actuellement très sollicité. Veuillez patienter quelques secondes avant de réessayer.";
+    }
+
+    return (
+      <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-xl flex items-center justify-between animate-fade-in">
+        <div className="flex items-center gap-3 text-red-700 font-bold text-sm">
+          <AlertTriangle size={18} /> {displayMsg}
+        </div>
+        <button onClick={() => setErrorMessage(null)} className="text-red-400 hover:text-red-600"><X size={18} /></button>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
       <header className="sticky top-0 z-50 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between shadow-sm">
@@ -243,14 +271,7 @@ CONSTAT : ${result.observation_fragment}`;
       </header>
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-6 py-6">
-        {errorMessage && (
-          <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-xl flex items-center justify-between animate-fade-in">
-            <div className="flex items-center gap-3 text-red-700 font-bold text-sm">
-              <AlertTriangle size={18} /> {errorMessage}
-            </div>
-            <button onClick={() => setErrorMessage(null)} className="text-red-400 hover:text-red-600"><X size={18} /></button>
-          </div>
-        )}
+        {renderErrorMessage(errorMessage)}
 
         {currentView === View.Diagnosis && (
           <div className="animate-fade-in space-y-6">

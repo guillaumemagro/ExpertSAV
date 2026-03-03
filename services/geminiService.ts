@@ -23,14 +23,27 @@ export class GeminiService {
     return new GoogleGenAI({ apiKey: key });
   }
 
-  private async callWithRetry(fn: () => Promise<any>, retries = 3, delay = 1000): Promise<any> {
+  private async callWithRetry(fn: () => Promise<any>, retries = 5, delay = 1500): Promise<any> {
     try {
       return await fn();
     } catch (error: any) {
-      if ((error.message?.includes("503") || error.message?.includes("overloaded")) && retries > 0) {
+      const errorStr = JSON.stringify(error);
+      const isOverloaded = errorStr.includes("503") || 
+                          errorStr.includes("overloaded") || 
+                          error.message?.includes("503") || 
+                          error.message?.includes("UNAVAILABLE");
+
+      if (isOverloaded && retries > 0) {
+        console.log(`Model overloaded, retrying in ${delay}ms... (${retries} attempts left)`);
         await new Promise(resolve => setTimeout(resolve, delay));
-        return this.callWithRetry(fn, retries - 1, delay * 2);
+        return this.callWithRetry(fn, retries - 1, delay * 1.5);
       }
+      
+      // Si c'est une erreur 503 finale, on renvoie un message propre
+      if (isOverloaded) {
+        throw new Error("Le service est momentanément surchargé. Veuillez patienter quelques secondes et réessayer.");
+      }
+      
       throw error;
     }
   }
