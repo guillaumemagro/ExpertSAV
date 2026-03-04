@@ -5,7 +5,7 @@ import { SERVICES_CATALOG } from "../constants";
 
 declare var process: any;
 
-const BASE_NFF_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTO0S_n_5DSo6g7U-ciY-9vXGHro1TGhenXPm_CEJG3gnks_ZkqX8umzuBnPjCBoBV_smqv38D26jSv/pub?gid=1448376971&single=true&output=csv";
+const BASE_NFF_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2DNRAkfdY6ewmfvguMEfDEk_WAXXt5jy6pWHvGAodKlp1TjgHdK_rfaawntFAGyVboD6XDPhbuRKj/pub?output=csv";
 // URL du script Google Apps Script (à configurer par l'utilisateur)
 const BACKLOG_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhpWv-oQVlqLr2Tmz2QRBcE3gBETS9txleiIFc_pgjf7YPYTCiytumgxxOQFCkWKNB/exec";
 
