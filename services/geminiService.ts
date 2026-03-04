@@ -108,13 +108,14 @@ export class GeminiService {
     if (this.rawNffRows.length === 0) return "";
     const keywords = (categoryName || "").toLowerCase().split(' ');
     const filtered = this.rawNffRows.filter(row => {
-      const productName = (row[0] || "").toLowerCase();
-      return keywords.some(kw => kw.length > 3 && productName.includes(kw));
+      const typology = (row[0] || "").toLowerCase();
+      const model = (row[1] || "").toLowerCase();
+      return keywords.some(kw => kw.length > 3 && (typology.includes(kw) || model.includes(kw)));
     });
     const shuffled = filtered.sort(() => 0.5 - Math.random()).slice(0, limit);
     return shuffled.length > 0 
       ? "HISTORIQUE RÉEL NFF (Base de données) :\n" + 
-        shuffled.map(row => `- Produit: ${row[0]} | Plainte: ${row[1]} | Clôture: ${row[2]}`).join('\n') 
+        shuffled.map(row => `- Typo: ${row[0]} | Modèle: ${row[1]} | Panne: ${row[2]} | Solution NFF: ${row[3]}`).join('\n') 
       : "";
   }
 
