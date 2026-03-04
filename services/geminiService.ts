@@ -7,7 +7,7 @@ declare var process: any;
 
 const BASE_NFF_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTO0S_n_5DSo6g7U-ciY-9vXGHro1TGhenXPm_CEJG3gnks_ZkqX8umzuBnPjCBoBV_smqv38D26jSv/pub?gid=1448376971&single=true&output=csv";
 // URL du script Google Apps Script (à configurer par l'utilisateur)
-const BACKLOG_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyn_Amrmt95CMldmI-Z9SGJ7u81JENcSTV2N3hjcW_1MfkEnRiKXo2KoyKaULpZWtBuBA/exec";
+const BACKLOG_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhpWv-oQVlqLr2Tmz2QRBcE3gBETS9txleiIFc_pgjf7YPYTCiytumgxxOQFCkWKNB/exec";
 
 export class GeminiService {
   private rawNffRows: string[][] = [
@@ -85,7 +85,7 @@ export class GeminiService {
     }
   }
 
-  async logActivity(store: string, type: 'FILTRAGE' | 'ACADEMIE') {
+  async logActivity(store: string, type: 'FILTRAGE' | 'ACADEMIE', details?: string) {
     try {
       // On ne bloque pas l'utilisateur si le log échoue
       fetch(BACKLOG_SCRIPT_URL, {
@@ -95,7 +95,8 @@ export class GeminiService {
         body: JSON.stringify({
           date: new Date().toLocaleString('fr-FR'),
           magasin: store,
-          type: type
+          type: type,
+          details: details || ""
         })
       }).catch(e => console.warn("Backlog log error:", e));
     } catch (e) {

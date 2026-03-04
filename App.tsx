@@ -86,7 +86,7 @@ export default function App() {
     setTheoryData(null);
 
     // Log de l'activité
-    if (selectedStore) gemini.logActivity(selectedStore, 'ACADEMIE');
+    if (selectedStore) gemini.logActivity(selectedStore, 'ACADEMIE', `Théorie : ${category}`);
 
     try {
       const data = await gemini.generateTheory(category);
@@ -107,7 +107,7 @@ export default function App() {
     setSelectedOptions(new Set());
 
     // Log de l'activité
-    if (selectedStore) gemini.logActivity(selectedStore, 'ACADEMIE');
+    if (selectedStore) gemini.logActivity(selectedStore, 'ACADEMIE', `Quiz : ${trainingCategory}`);
 
     try {
       const q = await gemini.generateQuizQuestion(trainingCategory, calculatedDifficulty, quizHistory);
@@ -163,7 +163,10 @@ export default function App() {
     setCheckedSteps(new Set()); 
     
     // Log de l'activité
-    if (selectedStore) gemini.logActivity(selectedStore, 'FILTRAGE');
+    if (selectedStore) {
+      const details = `${productType} ${brand} ${model} - ${symptomInput}`.trim();
+      gemini.logActivity(selectedStore, 'FILTRAGE', details);
+    }
 
     try {
       // On lance les deux en parallèle pour gagner du temps
