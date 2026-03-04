@@ -6,6 +6,8 @@ import { SERVICES_CATALOG } from "../constants";
 declare var process: any;
 
 const BASE_NFF_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTO0S_n_5DSo6g7U-ciY-9vXGHro1TGhenXPm_CEJG3gnks_ZkqX8umzuBnPjCBoBV_smqv38D26jSv/pub?gid=1448376971&single=true&output=csv";
+// URL du script Google Apps Script (à configurer par l'utilisateur)
+const BACKLOG_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyn_Amrmt95CMldmI-Z9SGJ7u81JENcSTV2N3hjcW_1MfkEnRiKXo2KoyKaULpZWtBuBA/exec";
 
 export class GeminiService {
   private rawNffRows: string[][] = [
@@ -80,6 +82,24 @@ export class GeminiService {
       // On ne vide pas la base, on garde les données de secours
     } finally {
       this.isDbLoading = false;
+    }
+  }
+
+  async logActivity(store: string, type: 'FILTRAGE' | 'ACADEMIE') {
+    try {
+      // On ne bloque pas l'utilisateur si le log échoue
+      fetch(BACKLOG_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Important pour Google Apps Script
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: new Date().toLocaleString('fr-FR'),
+          magasin: store,
+          type: type
+        })
+      }).catch(e => console.warn("Backlog log error:", e));
+    } catch (e) {
+      console.warn("Backlog log error:", e);
     }
   }
 

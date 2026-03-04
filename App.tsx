@@ -21,6 +21,7 @@ const WAITING_MESSAGES = [
 ];
 
 export default function App() {
+  const [selectedStore, setSelectedStore] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<View>(View.Diagnosis);
   const [score, setScore] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -83,6 +84,10 @@ export default function App() {
     setIsTheoryLoading(true);
     setErrorMessage(null);
     setTheoryData(null);
+
+    // Log de l'activité
+    if (selectedStore) gemini.logActivity(selectedStore, 'ACADEMIE');
+
     try {
       const data = await gemini.generateTheory(category);
       setTheoryData(data);
@@ -100,6 +105,10 @@ export default function App() {
     setCurrentView(View.TrainingQuiz);
     setQuizFeedback(null);
     setSelectedOptions(new Set());
+
+    // Log de l'activité
+    if (selectedStore) gemini.logActivity(selectedStore, 'ACADEMIE');
+
     try {
       const q = await gemini.generateQuizQuestion(trainingCategory, calculatedDifficulty, quizHistory);
       setCurrentQuiz(q);
@@ -153,6 +162,9 @@ export default function App() {
     setResult(null);
     setCheckedSteps(new Set()); 
     
+    // Log de l'activité
+    if (selectedStore) gemini.logActivity(selectedStore, 'FILTRAGE');
+
     try {
       // On lance les deux en parallèle pour gagner du temps
       // Note: Le guide visuel se base maintenant sur le symptôme pour pouvoir démarrer immédiatement
@@ -212,6 +224,35 @@ CONSTAT : ${result.observation_fragment}`;
       !s.name.toLowerCase().includes('club')
     );
   }, [result]);
+
+  if (!selectedStore) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#1b1d29] text-white p-6 text-center">
+        <div className="bg-[#f56a00] p-4 rounded-3xl mb-8 shadow-2xl animate-pulse">
+          <ShoppingBag size={48} />
+        </div>
+        <h1 className="text-4xl font-black font-work uppercase tracking-tighter mb-2">Expert Complice</h1>
+        <p className="text-slate-400 mb-10 text-sm uppercase tracking-widest font-bold">Sélectionnez votre magasin</p>
+        
+        <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+          {['F100', 'F121'].map(store => (
+            <button 
+              key={store}
+              onClick={() => setSelectedStore(store)}
+              className="bg-white/5 hover:bg-[#f56a00] border border-white/10 hover:border-[#f56a00] text-white p-8 rounded-3xl font-black text-2xl transition-all shadow-xl flex flex-col items-center gap-3 group"
+            >
+              <span className="group-hover:scale-110 transition-transform">{store}</span>
+              <div className="w-8 h-1 bg-white/20 rounded-full group-hover:bg-white/50"></div>
+            </button>
+          ))}
+        </div>
+        
+        <p className="mt-12 text-[10px] text-slate-500 uppercase tracking-widest font-bold opacity-50">
+          Propulsé par le Labo SAV Boulanger
+        </p>
+      </div>
+    );
+  }
 
   const renderErrorMessage = (msg: string | null) => {
     if (!msg) return null;
