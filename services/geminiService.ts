@@ -305,7 +305,7 @@ DIRECTIVES GÉNÉRALES :
 
   async generateVisualGuide(product: string, category: string, focusDescription: string): Promise<string | undefined> {
     const ai = this.getAIInstance();
-    const prompt = `Macro close-up technical diagram of ${product}, specifically illustrating the ACTION to be taken: ${focusDescription}. Clean, simplified technical style. White background. Use LARGE, READABLE text labels for the main components involved in the action. Focus on clarity for a repair technician. No complex exploded views, prefer a clear focus on the specific action or part to test.`;
+    const prompt = `Ultra-minimalist schematic illustration of ${product}. Focus ONLY on this action: ${focusDescription}. Use bold black lines on a white background. NO complex labels, NO checklists, NO small text. Use only 1 or 2 large, clear red arrows to show the action. Style: clean, flat, 2D vector icon style. Extreme simplicity is mandatory. The image must be instantly understandable.`;
     try {
       const response = await ai.models.generateContent({
         model: 'gemini-3.1-flash-image-preview',
