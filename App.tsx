@@ -16,7 +16,7 @@ const gemini = new GeminiService();
 
 const WAITING_MESSAGES = [
   "Application de la matrice de prix Boulanger...",
-  "Vérification de l'éligibilité Club Infinity...",
+  "Analyse de la recevabilité SAV...",
   "Optimisation du filtrage comptoir..."
 ];
 
@@ -381,12 +381,11 @@ CONSTAT : ${result.observation_fragment}`;
                 </div>
                 
                 <div className="space-y-6">
-                  {result.is_infinity_eligible && (
-                    <div className="bg-slate-900 p-6 rounded-3xl text-white shadow-lg border-b-4 border-orange-500">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-orange-400 mb-2 flex items-center gap-1.5"><Star size={10} /> Éligible Club Infinity</p>
-                      <h4 className="text-lg font-black mb-2">Club Infinity</h4>
-                      <p className="text-slate-400 text-[10px] leading-relaxed mb-4">Proposez la réparation illimitée pour fidéliser et sécuriser l'usage client.</p>
-                      <div className="bg-white/10 p-2.5 rounded-xl border border-white/5 text-center"><span className="text-[9px] font-black text-white">DÈS 11,99€ / MOIS</span></div>
+                  {result.receivability_control && (
+                    <div className="bg-slate-900 p-6 rounded-3xl text-white shadow-lg border-b-4 border-cyan-500">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-cyan-400 mb-2 flex items-center gap-1.5"><ShieldCheck size={10} /> Recevabilité SAV</p>
+                      <h4 className="text-lg font-black mb-2">Contrôle de Recevabilité</h4>
+                      <p className="text-slate-300 text-[10px] leading-relaxed font-medium">{result.receivability_control}</p>
                     </div>
                   )}
 

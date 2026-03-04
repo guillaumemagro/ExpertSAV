@@ -14,8 +14,8 @@ export type DiagnosticResult = {
   sav_info: string;
   professional_summary: string;
   isHardwareFailure: boolean;
-  is_infinity_eligible: boolean;
   technical_focus: string;
+  receivability_control: string;
   visual_guide?: string;
   accessories: { name: string; price: string; reason: string }[];
   services: { name: string; price: string; reason: string; type?: string }[];

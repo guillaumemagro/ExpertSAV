@@ -125,7 +125,7 @@ export class GeminiService {
     return this.callWithRetry(async () => {
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
-        contents: `DOSSIER TECHNIQUE SAV :\nPRODUIT : ${productType} ${brand} ${model}\nSYMPTÔME DÉCLARÉ : ${symptom}\n\n${nffContext}\n\nCATALOGUE SERVICES SAV (HORS INFINITY) :\n${SERVICES_CATALOG}`,
+        contents: `DOSSIER TECHNIQUE SAV :\nPRODUIT : ${productType} ${brand} ${model}\nSYMPTÔME DÉCLARÉ : ${symptom}\n\n${nffContext}\n\nCATALOGUE SERVICES SAV :\n${SERVICES_CATALOG}`,
         config: {
           thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
           systemInstruction: `Tu es l'Ingénieur Référent National SAV Boulanger. 
@@ -138,18 +138,20 @@ QUALITÉ TECHNIQUE EXIGÉE POUR LE RÉSUMÉ PHEBUS :
 
 DIRECTIVES GÉNÉRALES :
 - DIAGNOSTIC : Identifie le composant précis.
+- FOCUS TECHNIQUE : Explique de manière pédagogique la cause du problème ET décris précisément la TOUTE PREMIÈRE ACTION de filtrage à réaliser au comptoir.
+- CONTRÔLE DE RECEVABILITÉ : Donne une instruction claire sur le risque de NFF (No Fault Found) ou la validité de la prise en charge sous garantie selon les symptômes.
 - USAGE : Explique comment vérifier un mauvais usage.
-- EXCLUSION : Interdiction de citer le "Prêt" ou "Infinity" dans les services.`,
+- EXCLUSION : Interdiction ABSOLUE de citer "Infinity" ou "Club Infinity" ou le "Prêt" dans les services ou n'importe où ailleurs.`,
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
             properties: {
               cause: { type: Type.STRING },
               professional_summary: { type: Type.STRING },
-              technical_focus: { type: Type.STRING },
+              technical_focus: { type: Type.STRING, description: "Explication du problème + première action de filtrage" },
+              receivability_control: { type: Type.STRING, description: "Risque NFF ou validité garantie" },
               sav_info: { type: Type.STRING },
               isHardwareFailure: { type: Type.BOOLEAN },
-              is_infinity_eligible: { type: Type.BOOLEAN },
               symptom_fragment: { type: Type.STRING },
               observation_fragment: { type: Type.STRING },
               steps: {
@@ -181,7 +183,7 @@ DIRECTIVES GÉNÉRALES :
               accessories_to_include: { type: Type.STRING },
               loan_eligibility_reminder: { type: Type.STRING }
             },
-            required: ["cause", "professional_summary", "technical_focus", "steps", "sav_info", "isHardwareFailure", "is_infinity_eligible", "accessories", "services", "symptom_fragment", "observation_fragment", "sn_location_guide", "packaging_precautions", "accessories_to_include", "loan_eligibility_reminder"]
+            required: ["cause", "professional_summary", "technical_focus", "receivability_control", "steps", "sav_info", "isHardwareFailure", "accessories", "services", "symptom_fragment", "observation_fragment", "sn_location_guide", "packaging_precautions", "accessories_to_include", "loan_eligibility_reminder"]
           }
         }
       });
@@ -303,7 +305,7 @@ DIRECTIVES GÉNÉRALES :
 
   async generateVisualGuide(product: string, category: string, focusDescription: string): Promise<string | undefined> {
     const ai = this.getAIInstance();
-    const prompt = `Macro close-up technical diagram of ${product}, specifically zoomed-in on: ${focusDescription}. Clean, simplified technical style. White background. Use LARGE, READABLE text labels for the main components. Focus on clarity for a repair technician. No complex exploded views, prefer a clear focus on the specific part.`;
+    const prompt = `Macro close-up technical diagram of ${product}, specifically illustrating the ACTION to be taken: ${focusDescription}. Clean, simplified technical style. White background. Use LARGE, READABLE text labels for the main components involved in the action. Focus on clarity for a repair technician. No complex exploded views, prefer a clear focus on the specific action or part to test.`;
     try {
       const response = await ai.models.generateContent({
         model: 'gemini-3.1-flash-image-preview',

@@ -32,11 +32,6 @@ MATRICE DES SERVICES BOULANGER (ENTRETIEN & MISE EN SERVICE) :
 - Réinitialisation PC (Sortie d'usine) : 49,99€ (Code 1226333)
 - Montage Ventilateur : 9,99€ (Code 1226284)
 - Montage Trottinette : 29,00€ (Code 1226283)
-
-CLUB INFINITY (HORS PRESTATIONS UNITAIRES) :
-- Formule MAISON : Dès 11,99€/mois (GEM, PEM, Aspirateurs, Cafetières)
-- Formule SMARTPHONE : Dès 15,99€/mois
-- Formule IMAGE & SON / MULTIMÉDIA : Dès 11,99€/mois
 `;
 
 export const TECH_ICONS: Record<string, React.ElementType> = {
