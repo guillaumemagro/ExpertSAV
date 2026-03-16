@@ -85,7 +85,7 @@ export class GeminiService {
     }
   }
 
-  async logActivity(store: string, type: 'FILTRAGE' | 'ACADEMIE', details?: string) {
+  async logActivity(store: string, type: 'FILTRAGE' | 'ACADEMIE' | 'CHATBOT', details?: string, extra?: string) {
     try {
       // On ne bloque pas l'utilisateur si le log échoue
       fetch(BACKLOG_SCRIPT_URL, {
@@ -96,7 +96,8 @@ export class GeminiService {
           date: new Date().toLocaleString('fr-FR'),
           magasin: store,
           type: type,
-          details: details || ""
+          details: details || "",
+          extra: extra || ""
         })
       }).catch(e => console.warn("Backlog log error:", e));
     } catch (e) {
@@ -333,6 +334,34 @@ DIRECTIVES GÉNÉRALES :
       console.error("Image generation error:", error);
       return undefined; 
     }
+  }
+
+  async chat(productInfo: string, symptom: string, diagnosticContext: string, history: { role: 'user' | 'model', text: string }[]): Promise<string> {
+    const ai = this.getAIInstance();
+    const chat = ai.chats.create({
+      model: "gemini-3-flash-preview",
+      history: history.slice(0, -1).map(m => ({
+        role: m.role === 'user' ? 'user' : 'model',
+        parts: [{ text: m.text }]
+      })),
+      config: {
+        systemInstruction: `Tu es l'Ingénieur Référent National SAV Boulanger. 
+        Tu aides un conseiller au comptoir à approfondir un filtrage technique.
+        CONTEXTE DU PRODUIT : ${productInfo}
+        SYMPTÔME INITIAL : ${symptom}
+        DIAGNOSTIC PRÉCÉDENT : ${diagnosticContext}
+        
+        Réponds de manière courte, technique et pédagogique. 
+        Ton but est d'aider à confirmer si le produit doit partir en SAV ou si une manipulation supplémentaire peut résoudre le problème sur place.
+        INTERDICTION de citer "Infinity", "Club Infinity" ou le "Prêt".`,
+      },
+    });
+
+    return this.callWithRetry(async () => {
+      const lastMessage = history[history.length - 1].text;
+      const response = await chat.sendMessage({ message: lastMessage });
+      return response.text || "Désolé, je n'ai pas pu générer de réponse.";
+    });
   }
 
   private safeParseJSON(text: string | undefined): any {

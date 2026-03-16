@@ -6,9 +6,9 @@ import {
   FileOutput, X, Box, Tag, Check, Square, CheckSquare,
   Sparkles, Trophy, BrainCircuit, Play, ArrowRight, Lightbulb,
   AlertTriangle, Star, Copy, CheckCircle2, Info, ChevronLeft, CheckCircle,
-  ClipboardList, Printer, FileText, ListChecks
+  ClipboardList, Printer, FileText, ListChecks, Send, MessageCircle
 } from 'lucide-react';
-import { View, DiagnosticResult, TheoryData, QuizQuestion } from './types';
+import { View, DiagnosticResult, TheoryData, QuizQuestion, ChatMessage } from './types';
 import { CATEGORIES, RANKS } from './constants';
 import { GeminiService } from './services/geminiService';
 
@@ -48,6 +48,10 @@ export default function App() {
   
   // Historique pour piloter la diversité et le 80/10/10
   const [quizHistory, setQuizHistory] = useState<{ themes: string[], correctIndices: number[] }>({ themes: [], correctIndices: [] });
+
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isChatting, setIsChatting] = useState(false);
 
   const currentRank = useMemo(() => {
     return RANKS.slice().reverse().find(r => score >= r.min) || RANKS[0];
@@ -161,6 +165,8 @@ export default function App() {
     setErrorMessage(null);
     setResult(null);
     setCheckedSteps(new Set()); 
+    setChatMessages([]);
+    setChatInput('');
     
     // Log de l'activité
     if (selectedStore) {
@@ -185,6 +191,34 @@ export default function App() {
       setIsAnalyzing(false);
     } finally {
       setIsGeneratingImage(false);
+    }
+  };
+
+  const handleChat = async () => {
+    if (!chatInput.trim() || !result || isChatting) return;
+    
+    const userMsg = chatInput.trim();
+    const newMessages: ChatMessage[] = [...chatMessages, { role: 'user', text: userMsg }];
+    setChatMessages(newMessages);
+    setChatInput('');
+    setIsChatting(true);
+
+    try {
+      const productInfo = `${productType} ${brand} ${model}`;
+      const diagnosticContext = `Cause: ${result.cause}. Résumé: ${result.professional_summary}. Focus: ${result.technical_focus}`;
+      
+      // Log de l'activité Chatbot
+      if (selectedStore) {
+        const details = `${productType} ${brand} ${model} - ${symptomInput}`.trim();
+        gemini.logActivity(selectedStore, 'CHATBOT', details, userMsg);
+      }
+
+      const response = await gemini.chat(productInfo, symptomInput, diagnosticContext, newMessages);
+      setChatMessages([...newMessages, { role: 'model', text: response }]);
+    } catch (err: any) {
+      setErrorMessage(err.message || "Erreur lors de la discussion.");
+    } finally {
+      setIsChatting(false);
     }
   };
 
@@ -422,6 +456,75 @@ CONSTAT : ${result.observation_fragment}`;
                   <button onClick={() => setShowTransferModal(true)} className="w-full py-4 bg-[#1b1d29] text-white rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-lg hover:bg-black transition-all flex items-center justify-center gap-2">
                     <FileOutput size={18} /> Finaliser l'envoi SAV
                   </button>
+                </div>
+
+                {/* Chatbox Section */}
+                <div className="lg:col-span-3 mt-10 bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden flex flex-col min-h-[400px]">
+                  <div className="bg-slate-900 p-6 text-white flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-orange-500 p-2 rounded-xl">
+                        <MessageCircle size={20} />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-black uppercase tracking-tight">Assistant Expert SAV</h4>
+                        <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Approfondissement du filtrage</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 p-6 overflow-y-auto space-y-4 max-h-[400px] bg-slate-50/50">
+                    {chatMessages.length === 0 ? (
+                      <div className="h-full flex flex-col items-center justify-center text-center p-10 space-y-4">
+                        <div className="bg-white p-4 rounded-full shadow-sm text-slate-200">
+                          <BrainCircuit size={48} />
+                        </div>
+                        <p className="text-xs font-bold text-slate-400 leading-relaxed max-w-xs">
+                          Une question sur ce diagnostic ? Un doute sur une étape ? 
+                          Posez votre question ici pour approfondir le filtrage.
+                        </p>
+                      </div>
+                    ) : (
+                      chatMessages.map((msg, idx) => (
+                        <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${
+                            msg.role === 'user' 
+                              ? 'bg-[#f56a00] text-white rounded-tr-none shadow-md' 
+                              : 'bg-white text-slate-800 rounded-tl-none shadow-sm border border-slate-100'
+                          }`}>
+                            {msg.text}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                    {isChatting && (
+                      <div className="flex justify-start">
+                        <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 flex items-center gap-2">
+                          <Loader2 size={16} className="animate-spin text-orange-500" />
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">L'expert réfléchit...</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-4 bg-white border-t border-slate-100">
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="Posez votre question technique ici..." 
+                        className="flex-1 p-4 bg-slate-50 rounded-2xl text-xs font-bold outline-none border border-transparent focus:border-orange-200 focus:bg-white transition-all"
+                        value={chatInput}
+                        onChange={e => setChatInput(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleChat()}
+                      />
+                      <button 
+                        onClick={handleChat}
+                        disabled={isChatting || !chatInput.trim()}
+                        className="bg-[#1b1d29] text-white p-4 rounded-2xl hover:bg-[#f56a00] transition-all disabled:opacity-50"
+                      >
+                        <Send size={20} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

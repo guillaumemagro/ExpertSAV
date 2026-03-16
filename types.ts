@@ -67,3 +67,8 @@ export type Category = {
   name: string;
   icon: string;
 };
+
+export type ChatMessage = {
+  role: 'user' | 'model';
+  text: string;
+};
