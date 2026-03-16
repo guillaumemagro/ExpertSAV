@@ -351,9 +351,14 @@ DIRECTIVES GÉNÉRALES :
         SYMPTÔME INITIAL : ${symptom}
         DIAGNOSTIC PRÉCÉDENT : ${diagnosticContext}
         
-        Réponds de manière courte, technique et pédagogique. 
-        Ton but est d'aider à confirmer si le produit doit partir en SAV ou si une manipulation supplémentaire peut résoudre le problème sur place.
-        INTERDICTION de citer "Infinity", "Club Infinity" ou le "Prêt".`,
+        DIRECTIVES DE RÉPONSE :
+        - Réponds de manière courte, technique et pédagogique.
+        - UTILISE LE MARKDOWN pour structurer ta réponse :
+          * Utilise des listes à puces pour les étapes ou points de contrôle.
+          * Utilise le gras pour les termes techniques importants.
+          * Sépare les idées par des paragraphes clairs.
+        - Ton but est d'aider à confirmer si le produit doit partir en SAV ou si une manipulation supplémentaire peut résoudre le problème sur place.
+        - INTERDICTION de citer "Infinity", "Club Infinity" ou le "Prêt".`,
       },
     });
 

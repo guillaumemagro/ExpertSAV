@@ -8,6 +8,7 @@ import {
   AlertTriangle, Star, Copy, CheckCircle2, Info, ChevronLeft, CheckCircle,
   ClipboardList, Printer, FileText, ListChecks, Send, MessageCircle
 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { View, DiagnosticResult, TheoryData, QuizQuestion, ChatMessage } from './types';
 import { CATEGORIES, RANKS } from './constants';
 import { GeminiService } from './services/geminiService';
@@ -486,12 +487,18 @@ CONSTAT : ${result.observation_fragment}`;
                     ) : (
                       chatMessages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${
+                          <div className={`max-w-[85%] p-5 rounded-3xl text-sm leading-relaxed ${
                             msg.role === 'user' 
                               ? 'bg-[#f56a00] text-white rounded-tr-none shadow-md' 
                               : 'bg-white text-slate-800 rounded-tl-none shadow-sm border border-slate-100'
                           }`}>
-                            {msg.text}
+                            {msg.role === 'user' ? (
+                              msg.text
+                            ) : (
+                              <div className="markdown-content prose prose-sm max-w-none">
+                                <ReactMarkdown>{msg.text}</ReactMarkdown>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))
