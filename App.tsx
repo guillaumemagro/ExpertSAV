@@ -273,7 +273,7 @@ CONSTAT : ${result.observation_fragment}`;
         <p className="text-slate-400 mb-10 text-sm uppercase tracking-widest font-bold">Sélectionnez votre magasin</p>
         
         <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-          {['F100', 'F121', 'F022', 'F528', 'F137', 'F277'].map(store => (
+          {['F100', 'F121', 'F022', 'F528', 'F137', 'F277', 'F270'].map(store => (
             <button 
               key={store}
               onClick={() => setSelectedStore(store)}
